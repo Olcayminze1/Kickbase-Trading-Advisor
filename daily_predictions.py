@@ -55,7 +55,7 @@ pd.set_option("display.width", 1000)
 # Adjust these settings to your preferences
 
 competition_ids = [1]                   # 1 = Bundesliga, 2 = 2. Bundesliga, 3 = La Liga
-league_name = "Die 10 Nuggatschleusen"  # Name of your league (wird gleich debug-gedruckt)
+league_name = "RÜCKRUNDE geliyoo"  # Name of your league (wird gleich debug-gedruckt)
 start_budget = 200_000_000              # Starting budget of your league
 league_start_date = "2025-12-27"        # Start date of your league, format: YYYY-MM-DD
 email = os.getenv("EMAIL_USER")         # Email to send recommendations to
