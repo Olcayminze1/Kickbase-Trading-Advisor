@@ -14,6 +14,7 @@ def get_leagues_infos(token):
     return [{"id": str(item.get("i")), "name": item.get("n")} for item in data.get("it", [])]
 
 def get_league_activities(token, league_id, league_start_date):
+    # Wir laden 2500 News-Einträge
     url = f"{BASE_URL}/leagues/{league_id}/activitiesFeed?max=2500"
     data = get_json_with_token(url, token)
     return data.get("af", [])
@@ -26,5 +27,5 @@ def get_league_players_on_market(token, league_id):
 def get_league_ranking(token, league_id):
     url = f"{BASE_URL}/leagues/{league_id}/ranking"
     data = get_json_with_token(url, token)
-    # WICHTIG: Hier geben wir eine Liste von Wörterbüchern zurück
+    # WICHTIG: Hier geben wir ein klares Wörterbuch zurück
     return [{"n": u["n"], "i": str(u["i"])} for u in data.get("us", [])]
