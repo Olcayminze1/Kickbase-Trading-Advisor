@@ -12,9 +12,9 @@ from features.predictions.predictions import live_data_predictions, join_current
 
 load_dotenv()
 
-# --- EINSTELLUNGEN ---
-LEAGUE_START = "2025-12-27" # Rückrundenstart
-START_CASH = 200000000      # Deine 200 Mio
+# --- USER SETTINGS ---
+LEAGUE_START = "2025-12-27" # Datum Rückrunden-Start
+START_CASH = 200000000 # Deine 200 Mio
 COMP_IDS = [1]
 
 # --- LOGIN & LIGA ---
@@ -34,10 +34,10 @@ feat = ["p", "mv", "days_to_next", "mv_change_1d", "mv_trend_1d", "mv_change_3d"
 model = train_model(*split_data(proc_df, feat, "mv_target_clipped")[:2])
 preds = live_data_predictions(today_df, model, feat)
 
-# 3. Ergebnisse zusammenführen
+# 3. Zusammenführung
 market_df = join_current_market(token, league_id, preds)
 squad_df = join_current_squad(token, league_id, preds)
 
-# 4. Mail senden
+# 4. Mail
 send_mail(budget_df, market_df, squad_df, os.getenv("EMAIL_USER"))
-print("RESTART ERFOLGREICH: Mail ist raus!")
+print("RESTART ERFOLGREICH: Budgets individuell berechnet!")
