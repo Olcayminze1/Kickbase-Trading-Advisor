@@ -14,7 +14,6 @@ def get_leagues_infos(token):
     return [{"id": str(item.get("i")), "name": item.get("n")} for item in data.get("it", [])]
 
 def get_league_activities(token, league_id, league_start_date):
-    # Wir laden 2500 News-Einträge
     url = f"{BASE_URL}/leagues/{league_id}/activitiesFeed?max=2500"
     data = get_json_with_token(url, token)
     return data.get("af", [])
