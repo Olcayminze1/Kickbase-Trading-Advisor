@@ -7,7 +7,7 @@ def calc_manager_budgets(token, league_id, league_start_date, start_budget):
     
     manager_list = []
     for m in managers:
-        # Hier greifen wir jetzt sicher auf die Namen (n) und IDs (i) zu
+        # Sicherer Zugriff auf Name (n) und ID (i)
         m_name = m.get("n")
         m_id = m.get("i")
         current_cash = float(start_budget)
@@ -15,18 +15,18 @@ def calc_manager_budgets(token, league_id, league_start_date, start_budget):
         for msg in activities:
             if msg.get("dt", "") < league_start_date:
                 continue
-            
+                
             # Typ 15 = Transfer
             if msg.get("t") == 15:
                 d = msg.get("data", {})
                 price = float(d.get("trp", 0))
-                # Prüfung ob Manager Käufer oder Verkäufer ist
-                if str(d.get("byr")) == m_id:
+                # Prüfung über ID oder Name im Text
+                if str(d.get("byr")) == m_id or f"{m_name} hat" in msg.get("msg", ""):
                     current_cash -= price
                 if str(d.get("slr")) == m_id:
                     current_cash += price
             
-            # Typ 26 = Achievements
+            # Typ 26 = Achievements/Prämien
             elif msg.get("t") == 26:
                 if str(msg.get("u")) == m_id:
                     current_cash += float(msg.get("data", {}).get("er", 0))
