@@ -1,7 +1,7 @@
 from features.predictions.predictions import live_data_predictions, join_current_market, join_current_squad
 from features.predictions.preprocessing import preprocess_player_data, split_data
 from features.predictions.modeling import train_model, evaluate_model
-from kickbase_api.league import get_league_id
+from kickbase_api.league import get_league_id, get_leagues_infos
 from kickbase_api.user import login
 from features.notifier import send_mail
 from features.predictions.data_handler import (
@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 import os, pandas as pd
 
 # Load environment variables from .env file
-load_dotenv() 
+load_dotenv()
 
 # ----------------- Notes & TODOs -----------------
 
@@ -34,8 +34,8 @@ last_pfm_values = 50    # in matchdays, max idk
 
 # which features to use for training and prediction
 features = [
-    "p", "mv", "days_to_next", 
-    "mv_change_1d", "mv_trend_1d", 
+    "p", "mv", "days_to_next",
+    "mv_change_1d", "mv_trend_1d",
     "mv_change_3d", "mv_vol_3d",
     "mv_trend_7d", "market_divergence"
 ]
@@ -55,18 +55,24 @@ pd.set_option("display.width", 1000)
 # Adjust these settings to your preferences
 
 competition_ids = [1]                   # 1 = Bundesliga, 2 = 2. Bundesliga, 3 = La Liga
-league_name = "Die 10 Nuggatschleusen"  # Name of your league, must be exact match, can be done via env or hardcoded
-start_budget = 50_000_000               # Starting budget of your league, used to calculate current budgets of other managers
-league_start_date = "2025-08-08"        # Start date of your league, used to filter activities, format: YYYY-MM-DD
-email = os.getenv("EMAIL_USER")         # Email to send recommendations to, can be the same as EMAIL_USER or different
+league_name = "Die 10 Nuggatschleusen"  # Name of your league (wird gleich debug-gedruckt)
+start_budget = 200_000_000              # Starting budget of your league
+league_start_date = "2025-12-27"        # Start date of your league, format: YYYY-MM-DD
+email = os.getenv("EMAIL_USER")         # Email to send recommendations to
 
 # ---------------------------------------------------
 
 # Load environment variables and login to kickbase
-USERNAME = os.getenv("KICK_USER") # DO NOT CHANGE THIS, YOU MUST SET THOSE IN GITHUB SECRETS OR A .env FILE
-PASSWORD = os.getenv("KICK_PASS") # DO NOT CHANGE THIS, YOU MUST SET THOSE IN GITHUB SECRETS OR A .env FILE
+USERNAME = os.getenv("KICK_USER")  # DO NOT CHANGE THIS
+PASSWORD = os.getenv("KICK_PASS")  # DO NOT CHANGE THIS
 token = login(USERNAME, PASSWORD)
 print("\nLogged in to Kickbase.")
+
+# ----------------- DEBUG: SHOW LEAGUES + IDS -----------------
+leagues = get_leagues_infos(token)
+print("\n=== MEINE LIGEN (Name + ID) ===")
+print(leagues)
+# ------------------------------------------------------------
 
 # Get league ID
 league_id = get_league_id(token, league_name)
@@ -83,7 +89,7 @@ save_player_data_to_db(token, competition_ids, last_mv_values, last_pfm_values, 
 player_df = load_player_data_from_db()
 print("\nData loaded from database.")
 
-# Preprocess the data and spit the data
+# Preprocess the data and split the data
 proc_player_df, today_df = preprocess_player_data(player_df)
 X_train, X_test, y_train, y_test = split_data(proc_player_df, features, target)
 print("\nData preprocessed.")
